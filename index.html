@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mobius | Digital Artist</title>
+    <style>
+        /* Color Palette - Defined as CSS Custom Properties for Theming */
+        :root {
+            /* Base colors (same in all themes) */
+            --pink: #ff66b2;
+            --green: #66ff99;
+            --orange: #ff9966;
+            --blue: #66ccff;
+            
+            /* Default to system preference (dark theme fallback) */
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #2d2d44;
+            --bg-tertiary: #3a3a5e;
+            --text-primary: #f0f0f0;
+            --text-secondary: #cccccc;
+            --border-color: #444466;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            --header-gradient: linear-gradient(135deg, var(--pink), var(--blue));
+            --footer-gradient: linear-gradient(135deg, var(--pink), var(--blue));
+        }
+        
+        /* System Theme - Respects user's OS setting */
+        .theme-system {
+            /* Let media queries handle this */
+        }
+        
+        /* Light Theme - Manual selection */
+        .theme-light {
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f0f0f5;
+            --text-primary: #333333;
+            --text-secondary: #555555;
+            --border-color: #dddddd;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            --header-gradient: linear-gradient(135deg, #ffb3d9, #b3e0ff);
+            --footer-gradient: linear-gradient(135deg, #ffb3d9, #b3e0ff);
+        }
+        
+        /* Dark Theme - Manual selection */
+        .theme-dark {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #2d2d44;
+            --bg-tertiary: #3a3a5e;
+            --text-primary: #f0f0f0;
+            --text-secondary: #cccccc;
+            --border-color: #444466;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            --header-gradient: linear-gradient(135deg, var(--pink), var(--blue));
+            --footer-gradient: linear-gradient(135deg, var(--pink), var(--blue));
+        }
+        
+        /* System preference for .theme-system class */
+        @media (prefers-color-scheme: light) {
+            .theme-system {
+                --bg-primary: #f8f9fa;
+                --bg-secondary: #ffffff;
+                --bg-tertiary: #f0f0f5;
+                --text-primary: #333333;
+                --text-secondary: #555555;
+                --border-color: #dddddd;
+                --shadow-color: rgba(0, 0, 0, 0.1);
+                --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+                --header-gradient: linear-gradient(135deg, #ffb3d9, #b3e0ff);
+                --footer-gradient: linear-gradient(135deg, #ffb3d9, #b3e0ff);
+            }
+            
+            .theme-system .price-item img {
+                border: 4px solid var(--orange);
+                box-shadow: 0 0 15px rgba(255, 153, 102, 0.5);
+            }
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .theme-system {
+                --bg-primary: #1a1a2e;
+                --bg-secondary: #2d2d44;
+                --bg-tertiary: #3a3a5e;
+                --text-primary: #f0f0f0;
+                --text-secondary: #cccccc;
+                --border-color: #444466;
+                --shadow-color: rgba(0, 0, 0, 0.3);
+                --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                --header-gradient: linear-gradient(135deg, var(--pink), var(--blue));
+                --footer-gradient: linear-gradient(135deg, var(--pink), var(--blue));
+            }
+            
+            .theme-system .price-item img {
+                border: 4px solid var(--orange);
+                box-shadow: 0 0 15px var(--pink);
+            }
+        }
+        
+        /* Theme-specific adjustments for manual themes */
+        .theme-light .price-item img {
+            border: 4px solid var(--orange);
+            box-shadow: 0 0 15px rgba(255, 153, 102, 0.5);
+        }
+        
+        .theme-dark .price-item img {
+            border: 4px solid var(--orange);
+            box-shadow: 0 0 15px var(--pink);
+        }
+        
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease, transform 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-secondary);
+            padding: 10px 15px;
+            border-radius: 30px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .theme-btn:hover {
+            background: var(--bg-tertiary);
+            transform: translateY(-2px);
+        }
+        
+        .theme-btn.active {
+            background: var(--orange);
+            color: #1a1a2e;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(255, 153, 102, 0.3);
+        }
+        
+        .theme-btn i {
+            font-size: 1.1rem;
+        }
+        
+        /* Header Styling */
+        header {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: var(--header-gradient);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.1);
+            mix-blend-mode: overlay;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: white;
+            text-shadow: 3px 3px 0 var(--orange);
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: white;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(5px);
+        }
+        
+        /* Section Styling */
+        section {
+            background-color: var(--bg-secondary);
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 15px;
+            border-left: 8px solid var(--orange);
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        h2 {
+            color: var(--green);
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--pink);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        
+        h3 {
+            color: var(--blue);
+            font-size: 1.8rem;
+            margin: 25px 0 15px;
+        }
+        
+        h4 {
+            color: var(--pink);
+            font-size: 1.4rem;
+            margin: 20px 0 10px;
+        }
+        
+        /* Pricing Section */
+        #pricing {
+            border-left-color: var(--green);
+        }
+        
+        .price-item {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            margin: 25px 0;
+            padding: 20px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .price-item:hover {
+            transform: translateY(-5px);
+            background: var(--bg-tertiary);
+            box-shadow: 0 10px 20px var(--shadow-color);
+        }
+        
+        .price-item img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .price-item p {
+            flex: 1;
+            color: var(--text-primary);
+        }
+        
+        strong {
+            color: var(--green);
+            font-size: 1.2rem;
+        }
+        
+        /* Lists Styling */
+        ul, ol {
+            padding-left: 25px;
+            margin: 15px 0;
+        }
+        
+        li {
+            margin: 10px 0;
+            padding-left: 10px;
+            color: var(--text-secondary);
+        }
+        
+        ul li {
+            list-style-type: "✦ ";
+        }
+        
+        ul li::marker {
+            color: var(--pink);
+        }
+        
+        ol li {
+            list-style-type: decimal-leading-zero;
+            color: var(--orange);
+        }
+        
+        /* Contact Section */
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .contact-info p {
+            background: linear-gradient(135deg, var(--blue), var(--pink));
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .contact-info p:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--green);
+        }
+        
+        .contact-info strong {
+            display: block;
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Glossary Styling */
+        #glossary p {
+            background: linear-gradient(135deg, var(--green), var(--orange));
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        #glossary strong {
+            color: #1a1a2e;
+            font-size: 1.1rem;
+        }
+        
+        /* Note Styling */
+        .note {
+            background: linear-gradient(135deg, var(--orange), #ffcc00);
+            color: #333;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: bold;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        /* Footer Styling */
+        footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+            background: var(--footer-gradient);
+            border-radius: 15px;
+            font-size: 0.9rem;
+            box-shadow: 0 -5px 20px var(--shadow-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        footer p {
+            margin: 15px 0;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .price-item {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .price-item img {
+                width: 120px;
+                height: 120px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            h2 {
+                font-size: 1.8rem;
+            }
+            
+            .contact-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                gap: 5px;
+            }
+            
+            .theme-btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+            
+            .theme-btn i {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Color Utility Classes */
+        .pink { color: var(--pink); }
+        .green { color: var(--green); }
+        .orange { color: var(--orange); }
+        .blue { color: var(--blue); }
+        
+        /* Theme icon styling */
+        .theme-icon {
+            font-style: normal;
+            font-size: 1.2rem;
+        }
+        
+        /* Save preference notification */
+        .theme-saved {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--green);
+            color: #1a1a2e;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1001;
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+        
+        .theme-saved.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="theme-system">
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <button class="theme-btn active" data-theme="system" title="Follow system theme">
+            <i class="fas fa-desktop"></i> Auto
+        </button>
+        <button class="theme-btn" data-theme="light" title="Light theme">
+            <i class="fas fa-sun"></i> Light
+        </button>
+        <button class="theme-btn" data-theme="dark" title="Dark theme">
+            <i class="fas fa-moon"></i> Dark
+        </button>
+    </div>
+    
+    <!-- Theme Saved Notification -->
+    <div class="theme-saved" id="themeSaved">Theme saved!</div>
+    
+    <header>
+        <h1>Mobius | <span class="green">Digital Artist</span></h1>
+        <p>Specializing in character art and illustrations with a focus on <span class="pink">emotion</span>, <span class="orange">color</span>, and <span class="blue">storytelling</span></p>
+    </header>
+
+    <main>
+        <section id="offer">
+            <h2><span class="pink">What</span> I Offer</h2>
+            <p><strong class="green">Process:</strong> Sketches → Lineart → Flat color → Finished piece</p>
+            <p><strong class="orange">Types:</strong> Personal art, Original Characters (OCs), Fanart</p>
+            <p><strong class="blue">Sizes:</strong> Chibis, Headshots, Half body, Full body, YCH, Icons/PFPs, Banners</p>
+            <p><strong class="pink">Details:</strong> Simple backgrounds, Complex backgrounds, Extra characters</p>
+        </section>
+
+        <section id="pricing">
+            <h2><span class="green">Pricing</span></h2>
+            
+            <div class="price-item">
+                <img src="C:\Users\ING\Desktop\Фото для програмування\Portfolio\head-shot.jpg" alt="Headshot Example"/>
+                <p><strong class="pink">Headshot:</strong> <span class="orange">$7-15</span> - Perfect for profiles & avatars</p>
+            </div>
+
+            <div class="price-item">
+                <img src="C:\Users\ING\Desktop\Фото для програмування\Portfolio\half-body.jpg" alt="Half Body Example"/>
+                <p><strong class="green">Half Body:</strong> <span class="orange">$15-35</span> - Great for character displays</p>
+            </div>
+
+            <div class="price-item">
+                <img src="C:\Users\ING\Desktop\Фото для програмування\Portfolio\full-body.jpg" alt="Full Body Example"/>
+                <p><strong class="blue">Full Body:</strong> <span class="orange">$40-60</span> - Complete character illustration</p>
+            </div>
+
+            <div class="note">
+                <p>Note: Backgrounds, extra characters, and commercial use may incur additional fees.</p>
+            </div>
+        </section>
+
+        <section id="tos">
+            <h3><span class="blue">Terms</span> of Service</h3>
+            <h4 class="green">Will Do</h4>
+            <ul>
+                <li>Humanoid, furry, anthro, and pony</li>
+                <li>Animals & mythical creatures</li>
+                <li>Fanart & original characters</li>
+                <li>Ship art (no proship)</li>
+            </ul>
+
+            <h4 class="pink">Won't Do</h4>
+            <ul>
+                <li>NSFW (especially involving minors)</li>
+                <li>Gore, fetish, hate speech</li>
+                <li>Stolen/traced characters</li>
+                <li>AI/NFT training, illegal content</li>
+                <li>Mecha, hyper-realistic art</li>
+            </ul>
+        </section>
+
+        <section id="guidelines">
+            <h3><span class="orange">Guidelines</span></h3>
+            <ol>
+                <li>Commissioning me means you accept all terms.</li>
+                <li>Payment is upfront. No refunds unless reasonable.</li>
+                <li>Edits allowed only in sketch/lineart stages. Color-stage changes cost extra.</li>
+                <li>Do not edit my art without permission.</li>
+                <li>Rude clients will be blocked/blacklisted.</li>
+                <li>I may decline any commission at my discretion.</li>
+                <li>Commercial use allowed with prior notice.</li>
+                <li>No NFT/AI training of my art.</li>
+            </ol>
+        </section>
+
+        <section id="contact">
+            <h3><span class="pink">Contact</span> Me</h3>
+            <div class="contact-info">
+                <p><strong>Discord</strong><br>@yukine0033</p>
+                <p><strong>TikTok</strong><br>@thecatgod666</p>
+            </div>
+        </section>
+
+        <section id="glossary">
+            <h3><span class="green">Glossary</span></h3>
+            <p><strong>YCH</strong><br>Your Character Here - A premade pose where you can place your character</p>
+            <p><strong>PFP</strong><br>Profile Picture - An image used as an online avatar</p>
+            <p><strong>Banner</strong><br>A wide image typically used as a header on social media</p>
+            <p><strong>Commercial Use</strong><br>Using the artwork for profit, such as merchandise or ad revenue</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>All artwork and content displayed in this commission sheet are the intellectual property of Mobius. Unauthorized use, reproduction, or distribution of any materials is strictly prohibited without prior written consent.</p>
+        <p>By commissioning artwork, you agree to respect the artist's rights and adhere to the terms outlined above.</p>
+        <p>Thank you for visiting my Commision sheet!</p>
+    </footer>
+
+    <script>
+        // Theme management system
+        document.addEventListener('DOMContentLoaded', function() {
+            const body = document.body;
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            const themeSaved = document.getElementById('themeSaved');
+            const savedTheme = localStorage.getItem('portfolio-theme');
+            
+            // Set initial theme from localStorage or default to system
+            if (savedTheme) {
+                body.classList.remove('theme-system', 'theme-light', 'theme-dark');
+                body.classList.add(savedTheme);
+                updateActiveButton(savedTheme);
+            } else {
+                updateActiveButton('theme-system');
+            }
+            
+            // Theme button click handlers
+            themeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const theme = this.getAttribute('data-theme');
+                    const themeClass = 'theme-' + theme;
+                    
+                    // Update body class
+                    body.classList.remove('theme-system', 'theme-light', 'theme-dark');
+                    body.classList.add(themeClass);
+                    
+                    // Update active button
+                    updateActiveButton(themeClass);
+                    
+                    // Save preference to localStorage
+                    localStorage.setItem('portfolio-theme', themeClass);
+                    
+                    // Show saved notification
+                    showSavedNotification();
+                    
+                    // Dispatch event for any other components that might need to know
+                    document.dispatchEvent(new CustomEvent('themechange', { 
+                        detail: { theme: theme, themeClass: themeClass } 
+                    }));
+                });
+            });
+            
+            // Update active button state
+            function updateActiveButton(themeClass) {
+                themeButtons.forEach(button => {
+                    button.classList.remove('active');
+                    const buttonTheme = 'theme-' + button.getAttribute('data-theme');
+                    if (buttonTheme === themeClass) {
+                        button.classList.add('active');
+                    }
+                });
+            }
+            
+            // Show "Theme saved!" notification
+            function showSavedNotification() {
+                themeSaved.classList.add('show');
+                setTimeout(() => {
+                    themeSaved.classList.remove('show');
+                }, 2000);
+            }
+            
+            // Detect system theme changes when in "system" mode
+            function handleSystemThemeChange() {
+                if (body.classList.contains('theme-system')) {
+                    // Force re-evaluation of CSS media queries by toggling class
+                    body.classList.remove('theme-system');
+                    void body.offsetWidth; // Trigger reflow
+                    body.classList.add('theme-system');
+                }
+            }
+            
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleSystemThemeChange);
+            window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', handleSystemThemeChange);
+            
+            // Add keyboard shortcuts for theme switching
+            document.addEventListener('keydown', function(e) {
+                // Alt+1 for system theme, Alt+2 for light, Alt+3 for dark
+                if (e.altKey) {
+                    let theme = null;
+                    switch(e.key) {
+                        case '1':
+                            theme = 'system';
+                            break;
+                        case '2':
+                            theme = 'light';
+                            break;
+                        case '3':
+                            theme = 'dark';
+                            break;
+                    }
+                    
+                    if (theme) {
+                        e.preventDefault();
+                        const button = document.querySelector(`.theme-btn[data-theme="${theme}"]`);
+                        if (button) button.click();
+                    }
+                }
+            });
+            
+            // Theme change event listener example (for future extensibility)
+            document.addEventListener('themechange', function(e) {
+                console.log('Theme changed to:', e.detail.theme);
+                // You could add analytics or other functionality here
+            });
+            
+            // Initialize with correct button state
+            updateActiveButton(body.classList.contains('theme-system') ? 'theme-system' : 
+                              body.classList.contains('theme-light') ? 'theme-light' : 'theme-dark');
+        });
+    </script>
+</body>
+</html>
